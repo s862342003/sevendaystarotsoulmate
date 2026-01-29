@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>動態測驗系統</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; padding: 20px; max-width: 700px; margin: auto; background: #f4f4f9; }
+        .quiz-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .question { margin-bottom: 25px; padding: 15px; border-left: 5px solid #007bff; background: #fafafa; }
+        #result { margin-top: 20px; padding: 20px; display: none; border-radius: 8px; text-align: center; font-size: 1.2em; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        button { width: 100%; padding: 12px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        #loading { text-align: center; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>個人化測驗</h1>
+    <div id="loading">正在從雲端載入題目...</div>
+    <div id="quiz-box" style="display:none;">
+        <div id="questions-content"></div>
+        <button onclick="calculateScore()">提交答案</button>
+    </div>
+    <div id="result"></div>
+</div>
+
+<script>
+    // 【請在此處替換你的 Google Sheet ID】
+    // 網址 https://docs.google.com/spreadsheets/d/'1P29ObUIB__nI55oOb1IQ80342A-j_FsIMnx1FSsb3ak'/edit
+    const SHEET_ID = '1P29ObUIB__nI55oOb1IQ80342A-j_FsIMnx1FSsb3ak';
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+
+    let quizData = [];
+
+    // 從 Google Sheet 抓取 CSV 資料
+    async function fetchQuiz() {
+        try {
+            const response = await fetch(SHEET_URL);
+            const data = await response.text();
+            parseCSV(data);
+        } catch (error) {
+            document.getElementById('loading').innerText = "載入失敗，請檢查網路或 ID 是否正確。";
+        }
+    }
+
+    function parseCSV(csvText) {
+        // 簡單的 CSV 解析 (假設第一列是標題：題目,A,B,C,正確答案)
+        const lines = csvText.split('\n').slice(1); 
+        quizData = lines.map(line => {
+            const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
+            return {
+                q: cols[0],
+                options: [cols[1], cols[2], cols[3]],
+                ans: cols[4] // 這裡存的是 A, B 或 C
+            };
+        });
+        renderQuiz();
+    }
+
+    function renderQuiz() {
+        const container = document.getElementById('questions-content');
+        quizData.forEach((item, index) => {
+            let html = `<div class="question"><p><strong>${index + 1}. ${item.q}</strong></p>`;
+            ['A', 'B', 'C'].forEach((letter, i) => {
+                html += `<label><input type="radio" name="q${index}" value="${letter}"> ${item.options[i]}</label><br>`;
+            });
+            html += `</div>`;
+            container.innerHTML += html;
+        });
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('quiz-box').style.display = 'block';
+    }
+
+    function calculateScore() {
+        let score = 0;
+        quizData.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (selected && selected.value === item.ans) {
+                score++;
+            }
+        });
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        
+        if (score === quizData.length) {
+            resultDiv.className = 'success';
+            resultDiv.innerHTML = `得分：${score} / ${quizData.length}<br>🎉 太棒了！你獲得了滿分回饋！`;
+        } else {
+            resultDiv.className = 'fail';
+            resultDiv.innerHTML = `得分：${score} / ${quizData.length}<br>可惜不是滿分，再接再厲！`;
+        }
+    }
+
+    fetchQuiz();
+</script>
+
+</body>
+</html>
+        }
+    </script>
+</body>
+</html>
