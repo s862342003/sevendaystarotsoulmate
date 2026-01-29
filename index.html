@@ -5,97 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>七日塔羅｜靈魂之友測驗</title>
     <style>
-        /* 整體背景：漸層深紫色 */
         :root { 
-            --primary-color: #7b1fa2; 
-            --accent-color: #ae52d4;
-            --bg-gradient: linear-gradient(135deg, #2e1a47 0%, #1a1a2e 100%); 
+            --gold: #d4af37; 
+            --deep-blue: #0a1128;
+            --purple: #673ab7;
         }
 
         body { 
             font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; 
-            background: var(--bg-gradient); 
-            background-attachment: fixed;
             margin: 0; 
             padding: 20px; 
             color: #ffffff; 
             display: flex;
             justify-content: center;
+            /* 神祕學星空背景設計 */
+            background-color: var(--deep-blue);
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
+                /* 金色神祕學線條與圓形符號 */
+                radial-gradient(circle at 50% 50%, transparent 150px, rgba(212, 175, 55, 0.1) 151px, transparent 152px),
+                radial-gradient(circle at 10% 10%, transparent 100px, rgba(212, 175, 55, 0.05) 101px, transparent 102px);
+            background-size: 550px 550px, 350px 350px, 250px 250px, 100% 100%, 100% 100%;
+            background-attachment: fixed;
         }
 
-        .container { width: 100%; max-width: 600px; }
+        .container { width: 100%; max-width: 600px; z-index: 1; }
 
-        /* 卡片設計：半透明毛玻璃感 */
+        /* 卡片設計：精緻白色卡片搭配金色邊框 */
         .card { 
-            background: rgba(255, 255, 255, 0.95); 
-            border-radius: 16px; 
-            padding: 28px; 
+            background: rgba(255, 255, 255, 0.98); 
+            border-radius: 20px; 
+            padding: 30px; 
             margin-bottom: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            color: #333;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
+            color: #1a1a2e;
+            border: 1px solid var(--gold);
+            position: relative;
+            overflow: hidden;
         }
 
-        .header { 
-            border-top: 12px solid var(--primary-color); 
-            text-align: center;
-        }
+        /* 頂部裝飾條 */
+        .header { border-top: 8px solid var(--gold); text-align: center; }
 
-        h1 { color: var(--primary-color); margin: 0 0 10px; font-size: 26px; }
-        p { color: #666; margin: 0; font-size: 15px; }
+        h1 { color: var(--deep-blue); margin: 0 0 10px; font-size: 24px; font-weight: 800; }
+        p { color: #555; margin: 0; font-size: 14px; letter-spacing: 1px; }
 
-        .q-title { font-weight: bold; margin-bottom: 20px; font-size: 17px; line-height: 1.6; color: #1a1a2e; }
+        .q-title { font-weight: bold; margin-bottom: 20px; font-size: 17px; line-height: 1.6; border-left: 4px solid var(--gold); padding-left: 12px; }
 
-        /* 選項按鈕優化 */
+        /* 選項樣式 */
         .option { 
             display: block; 
-            padding: 16px; 
-            border: 2px solid #eee; 
+            padding: 15px; 
+            border: 1px solid #e0e0e0; 
             margin-bottom: 12px; 
             border-radius: 12px; 
             cursor: pointer; 
             transition: all 0.3s ease; 
             font-size: 15px;
-            line-height: 1.4;
+            background: #fff;
         }
 
-        .option:hover { background-color: #f3e5f5; border-color: var(--accent-color); }
+        .option:hover { 
+            background-color: #fffdf5; 
+            border-color: var(--gold); 
+            transform: translateX(5px);
+        }
 
-        input[type="radio"] { margin-right: 12px; transform: scale(1.2); accent-color: var(--primary-color); }
+        input[type="radio"] { margin-right: 12px; transform: scale(1.3); accent-color: var(--purple); }
 
-        /* 按鈕美化 */
+        /* 按鈕：深色質感 */
         button { 
-            background: linear-gradient(to right, #7b1fa2, #ae52d4);
-            color: white; 
-            border: none; 
+            background: var(--deep-blue);
+            color: var(--gold); 
+            border: 1px solid var(--gold); 
             padding: 18px; 
             border-radius: 12px; 
             width: 100%; 
             font-size: 18px; 
             font-weight: bold; 
             cursor: pointer; 
-            transition: transform 0.2s;
-            box-shadow: 0 5px 15px rgba(123, 31, 162, 0.4);
+            transition: all 0.3s;
+            letter-spacing: 2px;
         }
 
-        button:hover { transform: translateY(-2px); opacity: 0.9; }
+        button:hover { 
+            background: var(--gold); 
+            color: var(--deep-blue);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
 
         /* 結果頁面 */
-        #result-page { display: none; animation: fadeIn 0.8s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        #result-page { display: none; text-align: center; animation: slideUp 0.6s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
         .thanks-box { 
-            background: #fdf7ff; 
-            padding: 20px; 
-            border-radius: 12px; 
-            border-left: 6px solid var(--primary-color);
+            background: #fdfaf0; 
+            padding: 25px; 
+            border-radius: 15px; 
+            border: 1px dashed var(--gold);
             line-height: 1.8;
             text-align: left;
             white-space: pre-wrap;
             margin: 20px 0;
-            color: #444;
+            color: #333;
+            font-size: 16px;
         }
 
-        .re-btn { background: #666; margin-top: 20px; font-size: 14px; padding: 12px; box-shadow: none; }
+        .re-btn { background: #333; color: #ccc; border: none; font-size: 14px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -104,16 +122,16 @@
     <div id="quiz-page">
         <div class="card header">
             <h1>你是我的靈魂隊友嗎？</h1>
-            <p>五維世界每個人都要往自己想要的世界前進，但有時候也想看看身邊會不會剛好有隊友一起，你是我的隊友嗎？</p>
+            <p>✧ 相逢即是有緣，若我榮幸與你同路，請讓我為你占卜 ✧</p>
         </div>
         <div id="questions-list"></div>
-        <button onclick="checkScore()">提交答案，查看結果</button>
+        <button onclick="checkScore()">提交答案，開啟契機</button>
     </div>
 
     <div id="result-page" class="card">
-        <h2 id="res-title" style="color: var(--primary-color); margin-top: 0;"></h2>
+        <h2 id="res-title" style="margin-top: 0; font-size: 26px;"></h2>
         <div class="thanks-box" id="res-text"></div>
-        <p style="color: #888; font-size: 13px;">謝謝你願意跟我一起玩！</p>
+        <p style="color: #999; font-size: 12px;">截圖後請透過 IG 或 LINE 聯繫</p>
         <button class="re-btn" onclick="location.reload()">重新測驗</button>
     </div>
 </div>
@@ -130,8 +148,8 @@
         { q: "台灣政治長年藍綠為大宗，若要改變現有生態，有些人選擇將眼光投向小型政黨，對此您的看法是？", opts: ["只要政見可以改善人民生活，不管什麼黨派我都會願意投票給他們。", "只要台灣還處於被侵略的風險之下，就不可能將機會給小黨。", "如果有小黨提出的政見是貼近我生活所需的，會考慮將票投給小黨做做看。", "應該要多給不同傾向的小黨機會，才能逐步改變台灣政治生態。"], ans: 1 }
     ];
 
-    const textFull = "【滿分回饋】\n你就是七日塔羅的靈魂之友！\n\n請「截圖本畫面」私訊七日塔羅\nIG: sevendaystarot 或 官方LINE: @473ijdyr\n即可兌換「一題文字占卜」。\n\n很高興認識這麼了解我的你！✨";
-    const textNotFull = "【測驗完成】\n謝謝你願意花時間完成這次測驗。\n\n人生有很多岔路，但很榮幸在此與你相遇！\n雖然有些觀點不同，但這正是世界有趣的地方。祝你有美好的一天！🔮";
+    const textFull = "【滿分回饋】\n你就是七日塔羅的靈魂之友！✨\n\n請「截圖本畫面」私訊七日塔羅\nIG: sevendaystarot 或 官方LINE: @473ijdyr\n即可兌換「一題文字占卜」。\n\n很高興能在茫茫人海中，遇見價值觀如此契合的你！🔮";
+    const textNotFull = "【測驗完成】\n感謝你願意花時間完成這次測驗。\n\n宇宙中每個靈魂都是獨一無二的，雖然我們的視角不盡相同，但這正是相遇的意義。\n\n祝福你在接下來的日子裡，都能順隨本心。🔮";
 
     function initQuiz() {
         const list = document.getElementById('questions-list');
@@ -154,7 +172,7 @@
             else if (parseInt(picked.value) === item.ans) score++;
         });
 
-        if (!allDone) { alert("還有題目沒寫完喔！"); return; }
+        if (!allDone) { alert("還有題目沒填寫完畢喔！🔮"); return; }
 
         document.getElementById('quiz-page').style.display = 'none';
         document.getElementById('result-page').style.display = 'block';
@@ -164,10 +182,10 @@
         const text = document.getElementById('res-text');
 
         if (score === 8) {
-            title.innerText = "⭐ 靈魂之友達成！";
+            title.innerText = "⭐ 靈魂之友達成";
             text.innerText = textFull;
         } else {
-            title.innerText = "測驗完成！";
+            title.innerText = "測驗完成";
             text.innerText = textNotFull;
         }
     }
