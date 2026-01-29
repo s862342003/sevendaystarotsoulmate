@@ -18,8 +18,7 @@
         button { background-color: var(--primary-color); color: white; border: none; padding: 16px; border-radius: 6px; width: 100%; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         button:hover { background-color: #512da8; }
         #result-page { display: none; text-align: center; }
-        .score { font-size: 54px; color: var(--primary-color); font-weight: bold; margin: 24px 0; }
-        .thanks-text { line-height: 1.8; text-align: left; white-space: pre-wrap; font-size: 16px; background: #f9f9f9; padding: 15px; border-radius: 6px; }
+        .thanks-text { line-height: 1.8; text-align: left; white-space: pre-wrap; font-size: 16px; background: #f9f9f9; padding: 20px; border-radius: 6px; margin-top: 20px; border-left: 5px solid var(--primary-color); }
     </style>
 </head>
 <body>
@@ -31,28 +30,24 @@
             <p>這個測驗沒有對錯，請抱著輕鬆的心情填寫吧！</p>
         </div>
         <div id="questions-list"></div>
-        <button onclick="checkScore()">開始作答</button>
+        <button onclick="checkScore()">提交答案</button>
     </div>
 
     <div id="result-page" class="card">
-        <h2 id="res-title"></h2>
-        <div class="score" id="res-score"></div>
+        <h2 id="res-title" style="color: var(--primary-color); font-size: 28px;"></h2>
         <div class="thanks-text" id="res-text"></div>
-        <button onclick="location.reload()" style="background: #666; margin-top: 25px;">重新挑戰</button>
+        <button onclick="location.reload()" style="background: #666; margin-top: 30px;">重新挑戰</button>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // ✍️ 題目與感謝詞設定 (已根據您的內容更新)
-    // ==========================================
     const myQuestions = [
         { q: "好友邀請您進入一個「好康群組」，點進去之後發現裡面上傳的影片疑似偷拍的性影像，此時您會？", opts: ["發現原來大家都這樣流傳，那我也必須回饋群組，不然不太厚道。", "直接退出群組，並告知朋友這是維法行為，請他也退出群組。", "群組那麼多人，我也只是跟著看而已，應該還好吧。", "公開這位朋友看外流影像的消息，反正他看起來不太注重隱私，現在也不是我朋友了。"], ans: 3 },
         { q: "好友接受不孕症治療許久無果，聚餐時他開心地說終於存夠錢去國外找代理孕母了，您的想法是？", opts: ["為什麼非得要生小孩呢？養寵物不好嗎？", "還是不能接受用金錢購買別人身體的行為，勸他再想想。", "可惜台灣沒有開放，不然省下來的錢可以給孩子買好多東西。", "太好了，終於如願以償有自己的孩子了！"], ans: 1 },
         { q: "對於女權主義，您的想法最接近何者？", opts: ["偏激女權是因為他們吃不到父權紅利，真正的好女權是要溫和推進議題，應該多推廣好女權的觀念。", "女權人士應該積極爭取女性服役，或是應在婚戀市場中主動分擔消費，因為要享受權利前必先盡該有的義務。", "女性主義有很多流派，主旨在解放被父權社會框架的所有人。", "女權一詞已經被過度濫用，變成性別對立無限上綱的詞彙，真正的關鍵應該在兩性互相尊重前提下達成的兩性平權。"], ans: 2 },
         { q: "對於目前台灣主權現況，您的認知是？", opts: ["台灣與中國同根同源，自古以來就是中國不可分割的一部分。", "台灣早已事實獨立，從未被中國統治過，不必公開宣布自中華人民共和國獨立。", "中華民國僅為代管政權，台灣、澎湖主權在國際法上未定。", "中華民國就是台灣，台澎金馬就是中華民國領土。"], ans: 2 },
         { q: "對於中國以及中國共產黨，您的看法最接近何者？", opts: ["台灣人應該抱持著開放的心態，與中國人民和平對等的交流。", "中國人民與中國共產黨應該分開看待，畢竟不是所有中國人都有入黨。", "台灣與中國同根同源，不應該以仇視心態看待彼此。", "反共不反中，到頭一場空。"], ans: 3 },
-        { q: "對於跨性別，您的想法是？", opts: ["法律強制要求手術變更性徵違反人權，性別是流動的，但手術結果不可逆。", "生理性別與外貌氣質無直接關係，只要不要造成他人困擾，都應尊重對方的行動。", "二元性別論是社會賦予的定義，人應該有定義自身性別的權利。", "性別不安的人應接受性別肯定手術後才可以申請性別變更，否則應被劃分為原生理性別。"], ans: 3 },
+        { q: "對於跨性別，您的想法是？", opts: ["法律強制要求手術變更性徵違反人權，性別是流動的，但手術結果不可逆。", "生理性別與外貌氣氣無直接關係，只要不要造成他人困擾，都應尊重對方的行動。", "二元性別論是社會賦予的定義，人應該有定義自身性別的權利。", "性別不安的人應接受性別肯定手術後才可以申請性別變更，否則應被劃分為原生理性別。"], ans: 3 },
         { q: "關於流浪動物，下列何者最接近您的看法？", opts: ["若無法為流浪動物提供一個永遠的家，就應該讓他們被環境自然淘汰。", "生命皆為平等，應該在行有餘力時為流浪動物提供溫飽。", "不會主動餵食，但會捐款給流浪動物愛心團體，讓專業團隊為流浪動物謀福祉。", "不主動接觸，但會捐款給TNR團體誘捕流浪動物結紮後原放。"], ans: 0 },
         { q: "台灣政治長年藍綠為大宗，若要改變現有生態，有些人選擇將眼光投向小型政黨，對此您的看法是？", opts: ["只要政見可以改善人民生活，不管什麼黨派我都會願意投票給他們。", "只要台灣還處於被侵略的風險之下，就不可能將機會給小黨。", "如果有小黨提出的政見是貼近我生活所需的，會考慮將票投給小黨做做看。", "應該要多給不同傾向的小黨機會，才能逐步改變台灣政治生態。"], ans: 1 }
     ];
@@ -81,21 +76,21 @@
             else if (parseInt(picked.value) === item.ans) score++;
         });
 
-        if (!allDone) { alert("還有題目沒寫完喔！請檢查是否有漏掉的選項。"); return; }
+        if (!allDone) { alert("還有題目沒寫完喔！"); return; }
 
         document.getElementById('quiz-page').style.display = 'none';
-        const resPage = document.getElementById('result-page');
-        resPage.style.display = 'block';
+        document.getElementById('result-page').style.display = 'block';
         window.scrollTo(0, 0);
 
-        document.getElementById('res-score').innerText = score + " / 8";
+        const title = document.getElementById('res-title');
+        const text = document.getElementById('res-text');
 
         if (score === 8) {
-            document.getElementById('res-title').innerText = "⭐ 靈魂之友成就達成！";
-            document.getElementById('res-text').innerText = textFull;
+            title.innerText = "⭐ 靈魂之友成就達成！";
+            text.innerText = textFull;
         } else {
-            document.getElementById('res-title').innerText = "測驗完成！";
-            document.getElementById('res-text').innerText = textNotFull;
+            title.innerText = "測驗完成！";
+            text.innerText = textNotFull;
         }
     }
     window.onload = initQuiz;
